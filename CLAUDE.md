@@ -27,11 +27,16 @@ Before first build, ensure Gradle wrapper is installed: `gradle wrapper` (requir
 - **No external dependencies** beyond AndroidX/Compose
 - **Threading:** Kotlin coroutines with `Dispatchers.IO` for database operations
 
+## State Management
+
+- Basket and interaction results are hoisted to `MainScreen` so they persist across tab switches
+- Each tab screen receives state via parameters and reports changes via callbacks
+
 ## Key Screens (3 tabs)
 
 1. **BasketCheckScreen** — Drug search + basket + interaction check (4 strategies: substance, class-level, CYP, EPha)
 2. **ClinicalSearchScreen** — Full-text search with term suggestions and paginated results
-3. **ATCClassScreen** — Sortable ATC drug class interaction overview table
+3. **ATCClassScreen** — Sortable ATC drug class interaction overview table (pre-lowercased texts for performance)
 
 ## iOS Counterpart
 

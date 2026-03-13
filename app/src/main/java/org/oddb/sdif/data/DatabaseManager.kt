@@ -507,7 +507,7 @@ class DatabaseManager private constructor(private val context: Context) {
     fun loadClassInteractions(): Pair<Int, List<ClassInteractionRow>> {
         val db = db ?: return Pair(0, emptyList())
 
-        data class DrugRow(val atc: String, val substances: String, val text: String)
+        data class DrugRow(val atc: String, val substances: String, val textLower: String)
 
         val sql = """
             SELECT brand_name, atc_code, active_substances, interactions_text FROM drugs
@@ -520,7 +520,7 @@ class DatabaseManager private constructor(private val context: Context) {
                 val substances = cursor.getString(2) ?: ""
                 val text = cursor.getString(3) ?: ""
                 if (atc.isNotEmpty() && text.isNotEmpty()) {
-                    drugs.add(DrugRow(atc, substances, text))
+                    drugs.add(DrugRow(atc, substances, text.lowercase()))
                 }
             }
         }
@@ -540,20 +540,27 @@ class DatabaseManager private constructor(private val context: Context) {
             if (nInClass == 0) continue
 
             val mentioningSubstances = mutableSetOf<String>()
-            var bestKeyword = ""
-            var bestCount = 0
+            val keywordCounts = IntArray(keywords.size)
 
-            for (kw in keywords) {
-                var count = 0
-                for (drug in drugs) {
-                    if (drug.atc.startsWith(prefix)) continue
-                    if (drug.text.contains(kw, ignoreCase = true)) {
-                        mentioningSubstances.add(drug.substances)
-                        count++
+            for (drug in drugs) {
+                if (drug.atc.startsWith(prefix)) continue
+                var matched = false
+                for ((ki, kw) in keywords.withIndex()) {
+                    if (drug.textLower.contains(kw)) {
+                        keywordCounts[ki]++
+                        if (!matched) {
+                            mentioningSubstances.add(drug.substances)
+                            matched = true
+                        }
                     }
                 }
-                if (count > bestCount) {
-                    bestCount = count
+            }
+
+            var bestKeyword = ""
+            var bestCount = 0
+            for ((ki, kw) in keywords.withIndex()) {
+                if (keywordCounts[ki] > bestCount) {
+                    bestCount = keywordCounts[ki]
                     bestKeyword = kw
                 }
             }

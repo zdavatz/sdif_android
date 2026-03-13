@@ -1,5 +1,6 @@
 package org.oddb.sdif.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,30 +24,31 @@ import org.oddb.sdif.data.*
 @Composable
 fun BasketCheckScreen(
     db: DatabaseManager,
+    basket: List<BasketDrug>,
+    onBasketChange: (List<BasketDrug>) -> Unit,
+    interactions: List<InteractionResult>,
+    onInteractionsChange: (List<InteractionResult>) -> Unit,
     onShowSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var searchText by remember { mutableStateOf("") }
     var suggestions by remember { mutableStateOf<List<DrugResult>>(emptyList()) }
-    var basket by remember { mutableStateOf<List<BasketDrug>>(emptyList()) }
-    var interactions by remember { mutableStateOf<List<InteractionResult>>(emptyList()) }
     var isChecking by remember { mutableStateOf(false) }
     var showSuggestions by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     var debounceJob by remember { mutableStateOf<Job?>(null) }
     val checker = remember { InteractionChecker(db) }
 
-    fun checkInteractions() {
-        if (basket.size < 2) {
-            interactions = emptyList()
+    fun checkInteractions(drugs: List<BasketDrug> = basket) {
+        if (drugs.size < 2) {
+            onInteractionsChange(emptyList())
             return
         }
         isChecking = true
-        val drugs = basket.toList()
         scope.launch(Dispatchers.IO) {
             val result = checker.checkInteractions(drugs)
             withContext(Dispatchers.Main) {
-                interactions = result
+                onInteractionsChange(result)
                 isChecking = false
             }
         }
@@ -58,19 +60,21 @@ fun BasketCheckScreen(
             val resolved = db.resolveDrug(drug.brandName)
             if (resolved != null) {
                 withContext(Dispatchers.Main) {
-                    basket = basket + resolved
+                    val newBasket = basket + resolved
+                    onBasketChange(newBasket)
                     searchText = ""
                     suggestions = emptyList()
                     showSuggestions = false
-                    if (basket.size >= 2) checkInteractions()
+                    if (newBasket.size >= 2) checkInteractions(newBasket)
                 }
             }
         }
     }
 
     fun removeFromBasket(drug: BasketDrug) {
-        basket = basket.filter { it.id != drug.id }
-        if (basket.size >= 2) checkInteractions() else interactions = emptyList()
+        val newBasket = basket.filter { it.id != drug.id }
+        onBasketChange(newBasket)
+        if (newBasket.size >= 2) checkInteractions(newBasket) else onInteractionsChange(emptyList())
     }
 
     fun debounceSearch(query: String) {
@@ -101,8 +105,8 @@ fun BasketCheckScreen(
             actions = {
                 if (basket.isNotEmpty()) {
                     TextButton(onClick = {
-                        basket = emptyList()
-                        interactions = emptyList()
+                        onBasketChange(emptyList())
+                        onInteractionsChange(emptyList())
                     }) {
                         Text("Leeren")
                     }
@@ -160,33 +164,31 @@ fun BasketCheckScreen(
                     )
                     Spacer(Modifier.height(4.dp))
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         for (drug in basket) {
-                            AssistChip(
-                                onClick = { removeFromBasket(drug) },
-                                label = {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(drug.brand, fontSize = 13.sp)
-                                        Text(
-                                            " [${drug.atcCode}]",
-                                            fontSize = 11.sp,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                        Spacer(Modifier.width(4.dp))
-                                        Icon(
-                                            Icons.Default.Close,
-                                            contentDescription = "Entfernen",
-                                            modifier = Modifier.size(14.dp)
-                                        )
-                                    }
-                                },
-                                colors = AssistChipDefaults.assistChipColors(
-                                    containerColor = Color(0xFF2196F3).copy(alpha = 0.1f),
-                                    labelColor = Color(0xFF2196F3)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .background(Color(0xFF2196F3).copy(alpha = 0.1f), RoundedCornerShape(16.dp))
+                                    .clickable { removeFromBasket(drug) }
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Text(drug.brand, fontSize = 13.sp, color = Color(0xFF2196F3))
+                                Text(
+                                    " [${drug.atcCode}]",
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF2196F3).copy(alpha = 0.6f)
                                 )
-                            )
+                                Spacer(Modifier.width(4.dp))
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = "Entfernen",
+                                    tint = Color(0xFF2196F3).copy(alpha = 0.6f),
+                                    modifier = Modifier.size(12.dp)
+                                )
+                            }
                         }
                     }
                 }

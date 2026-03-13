@@ -15,7 +15,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.oddb.sdif.data.BasketDrug
 import org.oddb.sdif.data.DatabaseManager
+import org.oddb.sdif.data.InteractionResult
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
@@ -27,6 +29,8 @@ fun MainScreen() {
     var dbReady by remember { mutableStateOf(db.isDatabaseAvailable()) }
     var selectedTab by remember { mutableIntStateOf(0) }
     var showSettings by remember { mutableStateOf(false) }
+    var basket by remember { mutableStateOf<List<BasketDrug>>(emptyList()) }
+    var interactions by remember { mutableStateOf<List<InteractionResult>>(emptyList()) }
 
     if (!dbReady) {
         DatabaseDownloadScreen(
@@ -71,6 +75,10 @@ fun MainScreen() {
         when (selectedTab) {
             0 -> BasketCheckScreen(
                 db = db,
+                basket = basket,
+                onBasketChange = { basket = it },
+                interactions = interactions,
+                onInteractionsChange = { interactions = it },
                 onShowSettings = { showSettings = true },
                 modifier = Modifier.padding(innerPadding)
             )
