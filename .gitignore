@@ -12,3 +12,8 @@ local.properties
 *.apk
 *.aab
 *.db
+*.store
+*.keystore
+*.jks
+signing.properties
+sdif.json

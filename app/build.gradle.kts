@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -7,6 +10,10 @@ plugins {
 android {
     namespace = "org.oddb.sdif"
     compileSdk = 35
+
+    signingConfigs {
+        create("release")
+    }
 
     defaultConfig {
         applicationId = "org.oddb.sdif"
@@ -18,11 +25,12 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -38,6 +46,29 @@ android {
     buildFeatures {
         compose = true
     }
+}
+
+val propFile = file("../signing.properties")
+if (propFile.canRead()) {
+    val props = Properties()
+    props.load(FileInputStream(propFile))
+    if (props.containsKey("STORE_FILE") &&
+        props.containsKey("STORE_PASSWORD") &&
+        props.containsKey("KEY_ALIAS") &&
+        props.containsKey("KEY_PASSWORD")) {
+        android.signingConfigs.getByName("release").apply {
+            storeFile = file(props["STORE_FILE"] as String)
+            storePassword = props["STORE_PASSWORD"] as String
+            keyAlias = props["KEY_ALIAS"] as String
+            keyPassword = props["KEY_PASSWORD"] as String
+        }
+    } else {
+        println("signing.properties found but some entries are missing")
+        android.buildTypes.getByName("release").signingConfig = null
+    }
+} else {
+    println("signing.properties not found")
+    android.buildTypes.getByName("release").signingConfig = null
 }
 
 dependencies {

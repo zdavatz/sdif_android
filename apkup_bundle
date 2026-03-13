@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+cd /home/zdavatz/software/sdif_android
+./gradlew clean
+./gradlew bundleRelease
+
+cd /home/zdavatz/software/android-bundle-uploader
+python3 -m venv env
+env/bin/pip install google-api-python-client oauth2client httplib2
+env/bin/python3 main.py ../sdif_android/sdif.json org.oddb.sdif /home/zdavatz/software/sdif_android/app/build/outputs/bundle/release/app-release.aab production
