@@ -17,3 +17,4 @@ local.properties
 *.jks
 signing.properties
 sdif.json
+app/google-services.json
