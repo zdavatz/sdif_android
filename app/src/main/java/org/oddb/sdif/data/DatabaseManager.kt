@@ -93,20 +93,10 @@ class DatabaseManager private constructor(private val context: Context) {
         val dbFile = getDbFile(context)
         if (dbFile.exists()) {
             db = SQLiteDatabase.openDatabase(dbFile.absolutePath, null, SQLiteDatabase.OPEN_READONLY)
-            return
-        }
-        // Copy bundled DB from assets
-        try {
-            context.assets.open("interactions.db").use { input ->
-                dbFile.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            db = SQLiteDatabase.openDatabase(dbFile.absolutePath, null, SQLiteDatabase.OPEN_READONLY)
-        } catch (_: Exception) {
-            // No bundled DB available
         }
     }
+
+    fun isDatabaseAvailable(): Boolean = db != null
 
     fun reloadDatabase() {
         db?.close()
