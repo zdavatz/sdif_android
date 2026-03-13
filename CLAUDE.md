@@ -23,7 +23,7 @@ Before first build, ensure Gradle wrapper is installed: `gradle wrapper` (requir
   - `org.oddb.sdif` — MainActivity entry point
   - `org.oddb.sdif.data` — Models, DatabaseManager (singleton), InteractionChecker
   - `org.oddb.sdif.ui` — Compose screens, theme
-- **Database:** SQLite via Android's built-in `SQLiteDatabase`, read-only. DB is either bundled in `assets/interactions.db` or downloaded to `context.filesDir/interactions.db`
+- **Database:** SQLite via Android's built-in `SQLiteDatabase`, read-only. Auto-downloaded on first launch to `context.filesDir/interactions.db` (no bundled DB in APK)
 - **No external dependencies** beyond AndroidX/Compose
 - **Threading:** Kotlin coroutines with `Dispatchers.IO` for database operations
 

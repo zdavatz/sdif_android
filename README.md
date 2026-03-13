@@ -24,7 +24,7 @@
 
 ## Database
 
-The app uses a SQLite database downloaded from `http://pillbox.oddb.org/interactions.db`. Optionally bundle `interactions.db` in `app/src/main/assets/` as a fallback. The database can be updated from within the app via Settings.
+On first launch, the app automatically downloads the SQLite database (~53MB) from `http://pillbox.oddb.org/interactions.db` with a progress indicator. The database can be updated later from within the app via Settings. No database is bundled in the APK.
 
 ## License
 
