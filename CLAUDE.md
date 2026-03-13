@@ -42,6 +42,13 @@ Before first build, ensure Gradle wrapper is installed: `gradle wrapper` (requir
 
 The iOS source lives at `/home/zdavatz/software/sdif_ios`. Both apps share the same SQLite database schema and interaction detection algorithms. Keep feature parity when modifying either.
 
+## Release & Distribution
+
+- **Signing:** `signing.properties` (gitignored) points to `privateKeySDIF.store`
+- **Upload script:** `./apkup_bundle` — cleans, builds AAB, uploads to Google Play via `android-bundle-uploader`
+- **Service account:** `sdif.json` (gitignored) — same service account as generika
+- **Screenshots:** `screenshots/` directory contains Play Store screenshots
+
 ## Database
 
 - Downloaded from `http://pillbox.oddb.org/interactions.db` (HTTP, not HTTPS)

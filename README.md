@@ -26,6 +26,21 @@
 
 On first launch, the app automatically downloads the SQLite database (~53MB) from `http://pillbox.oddb.org/interactions.db` with a progress indicator. The database can be updated later from within the app via Settings. No database is bundled in the APK.
 
+## Screenshots
+
+<p float="left">
+  <img src="screenshots/screenshot_interaction_check.png" width="300" />
+  <img src="screenshots/screenshot_clinical_search.png" width="300" />
+</p>
+
+## Google Play Store
+
+Upload release bundle to Google Play:
+
+```bash
+./apkup_bundle
+```
+
 ## License
 
 GPLv3 — see [LICENSE](LICENSE)
