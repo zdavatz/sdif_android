@@ -12,7 +12,7 @@
 
 - Kotlin + Jetpack Compose + Material 3
 - SQLite database (downloaded from pillbox.oddb.org)
-- No external dependencies beyond AndroidX/Compose
+- Firebase Crashlytics for crash reporting
 - Min SDK 26 (Android 8.0), Target SDK 35
 
 ## Build
