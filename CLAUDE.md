@@ -44,6 +44,7 @@ The iOS source lives at `/home/zdavatz/software/sdif_ios`. Both apps share the s
 
 ## Release & Distribution
 
+- **Current version:** 1.0.1 (versionCode 2)
 - **Signing:** `signing.properties` (gitignored) points to `privateKeySDIF.store`
 - **Upload script:** `./apkup_bundle` — cleans, builds AAB, uploads to Google Play via `android-bundle-uploader`
 - **Service account:** `sdif.json` (gitignored) — same service account as generika

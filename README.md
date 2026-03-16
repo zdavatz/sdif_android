@@ -35,6 +35,8 @@ On first launch, the app automatically downloads the SQLite database (~53MB) fro
 
 ## Google Play Store
 
+Current version: **1.0.1** (versionCode 2)
+
 Upload release bundle to Google Play:
 
 ```bash
